@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from datetime import datetime
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
@@ -16,6 +17,18 @@ def drop_outlier(ser: pd.Series) -> pd.Series:
     upper_out = q3 + (1.5 * iqr)
     lower_out = q1 - (1.5 * iqr)
     return ser.loc[(ser >= lower_out) & (ser <= upper_out)]
+
+
+def find_recency_last_visit(df: pd.DataFrame, col: str, today: str):
+    """
+        Find recency from last visit date
+        ---
+        today: YYYY-mm-dd format.
+    """
+    print(f"Find recency from last visit date {today}")
+    today = datetime.strptime(today, '%Y-%m-%d')
+    df[col] = df[col].map(pd.to_datetime)
+    return df[col].map(lambda x: (today - x).days)
 
 
 def create_transformer(t_type: str=['impute', 'standard', 'ohe'],
