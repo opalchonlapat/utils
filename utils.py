@@ -19,18 +19,6 @@ def drop_outlier(ser: pd.Series) -> pd.Series:
     return ser.loc[(ser >= lower_out) & (ser <= upper_out)]
 
 
-def find_recency_last_visit(df: pd.DataFrame, col: str, today: str):
-    """
-        Find recency from last visit date
-        ---
-        today: YYYY-mm-dd format.
-    """
-    print(f"Find recency from last visit date {today}")
-    today = datetime.strptime(today, '%Y-%m-%d')
-    df[col] = df[col].map(pd.to_datetime)
-    return df[col].map(lambda x: (today - x).days)
-
-
 def create_transformer(t_type: str=['impute', 'standard', 'ohe'],
                       fill_value=None,
                       categories='auto' or List[str],
