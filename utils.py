@@ -10,8 +10,9 @@ from typing import List
 
 def drop_outlier(ser: pd.Series) -> pd.Series:
     """
-        Find and drop outlier 
+        Drop NA first and Find and drop outlier 
     """
+    ser = ser.dropna()
     q1, q3 = ser.quantile(q=[0.25, 0.75]).values
     iqr = q3 - q1
     upper_out = q3 + (1.5 * iqr)
