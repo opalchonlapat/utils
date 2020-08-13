@@ -8,16 +8,16 @@ from sklearn.compose import ColumnTransformer
 from typing import List
 
 
-def drop_outlier(ser: pd.Series) -> pd.Series:
+def drop_outlier(df: pd.DataFrame, col: str) -> pd.DataFrame:
     """
         Drop NA first and Find and drop outlier 
     """
-    ser = ser.dropna()
-    q1, q3 = ser.quantile(q=[0.25, 0.75]).values
+    df = df[col].dropna()
+    q1, q3 = df[col].quantile(q=[0.25, 0.75]).values
     iqr = q3 - q1
     upper_out = q3 + (1.5 * iqr)
     lower_out = q1 - (1.5 * iqr)
-    return ser.loc[(ser >= lower_out) & (ser <= upper_out)]
+    return df.loc[(df[col] >= lower_out) & (df[col] <= upper_out)]
 
 
 def abbreviation_number(num):
