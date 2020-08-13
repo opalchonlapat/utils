@@ -5,3 +5,4 @@ All utility functions for working.
 1. Drop outlier
 2. Abbreviation number (K, M...)
 3. Transformer preprocessing pipeline
+4. Clean Thailand province name

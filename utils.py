@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from datetime import datetime
+from fuzzywuzzy import fuzz
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
@@ -97,3 +98,29 @@ def transformer_preprocess_template():
     ct = map_transformer(['pipe_r', 'pipe_fm', 'pipe_pref', 'pipe_flag'],
                        [pipe_r, pipe_fm, pipe_pref, enc_flag],
                        [r_cols, fm_cols, pref_cols, flag_cols]) 
+
+
+def fuzzy_dict(df: pd.DataFrame, col: str, target: list, fuzz_fn, th: int=90):
+    """
+        Find edit distance of real name
+    """
+    values = df[col].dropna().unique()
+    result = {}
+    for i in values:
+        for j in target:
+            if fuzz_fn(i,j) > th:
+                result[i] = j
+    return result
+
+
+def clean_province(df: pd.DataFrame, province_col: str) -> pd.DataFrame:
+    """
+        Edit province name and convert to EN
+    """
+    province_df = pd.read_csv('https://github.com/PyThaiNLP/pythainlp/raw/dev/pythainlp/corpus/thailand_provinces_th.csv',
+                               header=None, names=['name_th', 'abbr_th', 'name_en', 'abbr_en'])
+    province_name = province_df[['name_th', 'name_en']].values.ravel()
+    province_map_dict = fuzzy_dict(df, province_col, province_name, fuzz.partial_ratio, 90)
+    province_th_en_map = province_df.set_index('name_th').to_dict()['name_en']
+    df[province_col] = df[province_col].map(province_map_dict).map(province_th_en_map)
+    return df
