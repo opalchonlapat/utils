@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, date
 from fuzzywuzzy import fuzz
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
@@ -124,3 +124,9 @@ def clean_province(df: pd.DataFrame, province_col: str) -> pd.DataFrame:
     province_th_en_map = province_df.set_index('name_th').to_dict()['name_en']
     df[province_col] = df[province_col].map(province_map_dict).map(province_th_en_map)
     return df
+
+
+def find_recency(Y:int, m:int, d:int, df:pd.DataFrame, col_name:str) -> pd.Series:
+    init_date = date(Y, m, d)
+    recency = init_date - pd.to_datetime(df[col_name]).dt.date
+    return recency.dt.days
