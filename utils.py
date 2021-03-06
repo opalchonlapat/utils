@@ -13,7 +13,7 @@ def drop_outlier(df: pd.DataFrame, col: str) -> pd.DataFrame:
     """
         Drop NA first and Find and drop outlier 
     """
-    df = df[col].dropna()
+    df = df.dropna(subset=[col])
     q1, q3 = df[col].quantile(q=[0.25, 0.75]).values
     iqr = q3 - q1
     upper_out = q3 + (1.5 * iqr)
